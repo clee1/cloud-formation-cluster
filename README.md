@@ -15,7 +15,8 @@ Prerequisites
 4. Run a command that describes all ips and hostnames
 5. Populate a databag that I will add in a couple of minutes...
 6. Set postgres credentials in a databag.
+6. Set the proper ip address of the chef server in the `.chef/knife.rb` file.
 6. From your workstation: knife ssl fetch; knife bootstrap...
-7. Put `id_rsa`, `id_rsa.pub` and `authorized_keys` files into `cookbooks/common/files` directory.
+7. Put `id_rsa`, `id_rsa.pub` and `authorized_keys` files into `cookbooks/common/files` directory. DO I STILL NEED THIS?
 7. ???
 8. Profit!!!

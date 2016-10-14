@@ -1,0 +1,373 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Metadata": {
+    "AWS::CloudFormation::Designer": {
+      "3144d814-c820-48d2-962f-0e32d9b556f8": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 270,
+          "y": 150
+        },
+        "z": 1,
+        "embeds": [],
+        "ismemberof": [
+          "731306cf-05ed-45f4-b232-88e0aa654c13"
+        ]
+      },
+      "c7ace745-5ce3-4d36-a838-a1997c8967f7": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 340,
+          "y": 150
+        },
+        "z": 1,
+        "embeds": [],
+        "ismemberof": [
+          "731306cf-05ed-45f4-b232-88e0aa654c13"
+        ]
+      },
+      "4b747d0d-0f67-49f5-bfd5-c863e193b2ad": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 410,
+          "y": 150
+        },
+        "z": 1,
+        "embeds": [],
+        "ismemberof": [
+          "731306cf-05ed-45f4-b232-88e0aa654c13"
+        ]
+      },
+      "6f6ff65a-f1b6-4aa8-8858-93f5aea34e32": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 270,
+          "y": -10
+        },
+        "z": 1,
+        "embeds": [],
+        "ismemberof": [
+          "731306cf-05ed-45f4-b232-88e0aa654c13"
+        ]
+      },
+      "3eb02492-885a-45e2-acdf-d67ade6597d9": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 480,
+          "y": 150
+        },
+        "z": 1,
+        "embeds": [],
+        "ismemberof": [
+          "731306cf-05ed-45f4-b232-88e0aa654c13"
+        ]
+      },
+      "8655c6fe-1522-4a1b-82a8-2dbe307a08b7": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 270,
+          "y": 60
+        },
+        "z": 1,
+        "embeds": [],
+        "ismemberof": [
+          "731306cf-05ed-45f4-b232-88e0aa654c13"
+        ]
+      },
+      "731306cf-05ed-45f4-b232-88e0aa654c13": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 150,
+          "y": -10
+        },
+        "z": 0,
+        "embeds": []
+      }
+    }
+  },
+  "Resources": {
+    "ChefServer": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": "ami-cc5a23db",
+        "InstanceType": "t2.medium",
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "SubnetId": {
+          "Ref": "SubnetID"
+        },
+        "SecurityGroupIds": [
+          {
+            "Ref": "StackSecurityGroup"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "ChefServer"
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "6f6ff65a-f1b6-4aa8-8858-93f5aea34e32"
+        }
+      }
+    },
+    "AmbariServer": {
+      "Type": "AWS::EC2::Instance",
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "8655c6fe-1522-4a1b-82a8-2dbe307a08b7"
+        }
+      },
+      "Properties": {
+        "ImageId": "ami-2051294a",
+        "InstanceType": {
+          "Ref": "AgentsInstanceTypeParameter"
+        },
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "SubnetId": {
+          "Ref": "SubnetID"
+        },
+        "SecurityGroupIds": [
+          {
+            "Ref": "StackSecurityGroup"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "AmbariServer"
+          }
+        ]
+      }
+    },
+    "StackSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Allow http to client host",
+        "VpcId": {
+          "Ref": "VpcId"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "80",
+            "ToPort": "80",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "443",
+            "ToPort": "443",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "8443",
+            "ToPort": "8443",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "-1",
+            "CidrIp": {
+              "Ref": "SubnetCidr"
+            }
+          }
+        ],
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "-1",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "731306cf-05ed-45f4-b232-88e0aa654c13"
+        }
+      }
+    },
+    "AmbariAgent3": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": "ami-2051294a",
+        "InstanceType": {
+          "Ref": "AgentsInstanceTypeParameter"
+        },
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "SubnetId": {
+          "Ref": "SubnetID"
+        },
+        "SecurityGroupIds": [
+          {
+            "Ref": "StackSecurityGroup"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "AmbariAgent3"
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "4b747d0d-0f67-49f5-bfd5-c863e193b2ad"
+        }
+      }
+    },
+    "AmbariAgent4": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": "ami-2051294a",
+        "InstanceType": {
+          "Ref": "AgentsInstanceTypeParameter"
+        },
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "SubnetId": {
+          "Ref": "SubnetID"
+        },
+        "SecurityGroupIds": [
+          {
+            "Ref": "StackSecurityGroup"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "AmbariAgent4"
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "3eb02492-885a-45e2-acdf-d67ade6597d9"
+        }
+      }
+    },
+    "AmbariAgent1": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": "ami-2051294a",
+        "InstanceType": {
+          "Ref": "AgentsInstanceTypeParameter"
+        },
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "SubnetId": {
+          "Ref": "SubnetID"
+        },
+        "SecurityGroupIds": [
+          {
+            "Ref": "StackSecurityGroup"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "AmbariAgent1"
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "3144d814-c820-48d2-962f-0e32d9b556f8"
+        }
+      }
+    },
+    "AmbariAgent2": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": "ami-2051294a",
+        "InstanceType": {
+          "Ref": "AgentsInstanceTypeParameter"
+        },
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "SubnetId": {
+          "Ref": "SubnetID"
+        },
+        "SecurityGroupIds": [
+          {
+            "Ref": "StackSecurityGroup"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "AmbariAgent2"
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "c7ace745-5ce3-4d36-a838-a1997c8967f7"
+        }
+      }
+    }
+  },
+  "Parameters": {
+    "KeyName": {
+      "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "ConstraintDescription": "must be the name of an existing EC2 KeyPair."
+    },
+    "AgentsInstanceTypeParameter": {
+      "Type": "String",
+      "Default": "t2.micro",
+      "AllowedValues": [
+        "t2.micro",
+        "t2.medium"
+      ],
+      "Description": "Enter t2.micro, t2.medium. Default is t2.micro."
+    },
+    "VpcId": {
+      "Type": "AWS::EC2::VPC::Id"
+    },
+    "SubnetID": {
+      "Type": "AWS::EC2::Subnet::Id"
+    },
+    "SubnetCidr": {
+      "Type": "String",
+      "Description": "Copy & paste cidr of the selected subnet above until I have this sorted out"
+    }
+  }
+}
