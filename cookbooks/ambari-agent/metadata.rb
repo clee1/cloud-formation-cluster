@@ -1,10 +1,9 @@
 name 'ambari-agent'
-maintainer 'The Authors'
-maintainer_email 'you@example.com'
-license 'all_rights'
-description 'Installs/Configures ambari-agent'
-long_description 'Installs/Configures ambari-agent'
+maintainer 'Eugen Prokhorenko'
+maintainer_email 'eugen.prokhorenko@gmail.com'
+description 'Installs and configures an ambari-agent'
 version '0.1.0'
+depends 'systemd'
 
 # If you upload to Supermarket you should set this so your cookbook
 # gets a `View Issues` link

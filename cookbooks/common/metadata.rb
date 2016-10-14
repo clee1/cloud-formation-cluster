@@ -1,10 +1,10 @@
 name 'common'
-maintainer 'The Authors'
-maintainer_email 'you@example.com'
-license 'all_rights'
-description 'Installs/Configures common'
-long_description 'Installs/Configures common'
+maintainer 'Eugen Prokhorenko'
+maintainer_email 'eugen.prokhorenko@com'
+description 'Basic set of features needed for every node in the cluster.'
 version '0.1.0'
+depends "hostsfile"
+depends "selinux"
 
 # If you upload to Supermarket you should set this so your cookbook
 # gets a `View Issues` link

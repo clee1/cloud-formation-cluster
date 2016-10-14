@@ -1,10 +1,11 @@
 name 'ambari-server'
-maintainer 'The Authors'
-maintainer_email 'you@example.com'
-license 'all_rights'
-description 'Installs/Configures ambari-server'
-long_description 'Installs/Configures ambari-server'
+maintainer 'Eugen Prokhorenko'
+maintainer_email 'eugen.prokhorenko@gmail.com'
+description 'Installs and configures an ambari-server'
 version '0.1.0'
+depends 'systemd'
+depends 'postgresql'
+depends 'database'
 
 # If you upload to Supermarket you should set this so your cookbook
 # gets a `View Issues` link

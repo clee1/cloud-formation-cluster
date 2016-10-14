@@ -2,7 +2,7 @@
 # Cookbook Name:: ambari-agent
 # Spec:: default
 #
-# Copyright (c) 2016 The Authors, All Rights Reserved.
+# Copyright (c) 2016 Eugen Prokhorenko, All Rights Reserved.
 
 require 'spec_helper'
 

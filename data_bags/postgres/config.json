@@ -1,0 +1,9 @@
+{
+  "id": "config",
+  "postgres_password": "password",
+  "pg_recovery_user": "recovery_user",
+  "pg_recovery_pass": "recovery_password",
+  "dbuser": "rangerdba",
+  "dbpass": "ranger",
+  "dbname": "ranger"
+}
