@@ -1,4 +1,4 @@
 {
-  "ip": "<PUT_IP_HERE>",
-  "hostname": "<PUT_HOSTNAME_HERE>"
+  "ip": "<AMBARI_SERVER_IP>",
+  "hostname": "<AMBARI_SERVER_HOSTNAME>"
 }

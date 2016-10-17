@@ -10,13 +10,7 @@ Prerequisites
 -------------
 
 1. Ensure that a VPC the cluster is to be deployed on resolves private hostnames within a subnetwork. (AWS -> VPC -> Select VPC -> Edit DNS Hostnames -> DNS Hostnames -> Yes)
-2. Ensure that AWS keys are set (???)
-3. Run a command that deployes a cluster (describe this command below) aws clodformation create-stack ...
-4. Run a command that describes all ips and hostnames
-5. Populate a databag that I will add in a couple of minutes...
-6. Set postgres credentials in a databag.
-6. Set the proper ip address of the chef server in the `.chef/knife.rb` file.
-6. From your workstation: knife ssl fetch; knife bootstrap...
-7. Put `id_rsa`, `id_rsa.pub` and `authorized_keys` files into `cookbooks/common/files` directory. DO I STILL NEED THIS?
-7. ???
-8. Profit!!!
+2. Ensure that AWS CLI is configured (See: http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html)
+3. Set postgres credentials in the databag: `./data_bags/postgres/config.json`
+
+After you have checked all the requirements you are ready to proceed by running a command that deployes the cluster: `./deploy.sh`
