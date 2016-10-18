@@ -2,6 +2,9 @@
 set -e
 export AWS_DEFAULT_OUTPUT="text"
 
+# Set the location of your AWS EC2 private key here:
+aws_key=~/default.pem
+
 vpc_id=$(aws ec2 describe-vpcs --query 'Vpcs[0].{VpcId:VpcId}')
 subnet_id=$(aws ec2 describe-subnets --query 'Subnets[0].{SubnetId:SubnetId}')
 subnet_cidr=$(aws ec2 describe-subnets --query 'Subnets[0].{CidrBlock:CidrBlock}')
@@ -18,28 +21,50 @@ aws cloudformation create-stack \
   --parameters \
     ParameterKey=KeyName,ParameterValue=default \
     ParameterKey=AgentsInstanceTypeParameter,ParameterValue=t2.micro \
-    ParameterKey=ChefServerInstanceTypeParameter,ParameterValue=t2.micro \
+    ParameterKey=ChefServerInstanceTypeParameter,ParameterValue=t2.medium \
     ParameterKey=VpcId,ParameterValue=$vpc_id \
     ParameterKey=SubnetID,ParameterValue=$subnet_id \
     ParameterKey=SubnetCidr,ParameterValue=$subnet_cidr
 
-# 1) Set domain name of the Chef Server:
+# 1) Configure the Chef Server:
 
-function describe_chef_server_fqdn {
-  chef_server_fqdn=$(aws ec2 describe-instances --filters \
-    Name=tag:Name,Values=ChefServer \
-    Name=instance-state-name,Values=running \
-    --query 'Reservations[*].Instances[*].{IP:PublicDnsName}')
-}
-describe_chef_server_fqdn
+function configure_chef_server {
+  # Fill out these variables below.
+  # For help see the "Standalone" section, list items 5 and 6 here: https://docs.chef.io/install_server.html
+  username=stevedanno
+  first_name=Steve
+  last_name=Danno
+  email=steved@chef.io
+  password='abc123'
+  short_org_name=4thcoffee
+  full_org_name='Fourth Coffee, Inc.'
 
-while [ -z $chef_server_fqdn ]; do
-  sleep 30
-  echo Waiting chef_server_fqdn
+  function describe_chef_server_fqdn {
+    chef_server_fqdn=$(aws ec2 describe-instances --filters \
+      Name=tag:Name,Values=ChefServer \
+      Name=instance-state-name,Values=running \
+      --query 'Reservations[*].Instances[*].{IP:PublicDnsName}')
+  }
   describe_chef_server_fqdn
-done
 
-sed ./.chef/knife.rb -i.old -e "s/<CHEF_SERVER_URL>/$chef_server_fqdn/g"
+  while [ -z $chef_server_fqdn ]; do
+    sleep 30
+    echo Waiting chef_server_fqdn
+    describe_chef_server_fqdn
+  done
+
+  ssh -i $aws_key "ec2-user@$chef_server_fqdn chef-server-ctl user-create $username $first_name $last_name $email '$password' --filename /home/ec2-user/$user.pem"
+  ssh -i $aws_key "ec2-user@$chef_server_fqdn chef-server-ctl org-create $short_org_name '$full_org_name' --association_user $username --filename /home/ec2-user/$short_org_name-validator.pem"
+  scp -i $aws_key "ec2-user@$chef_server_fqdn:$user.pem ./.chef/"
+  scp -i $aws_key "ec2-user@$chef_server_fqdn:$short_org_name-validator.pem ./.chef/"
+
+  sed ./.chef/knife.rb -i.old -e \
+    "s/<CHEF_SERVER_URL>/$chef_server_fqdn/g;
+     s/<NODE_NAME>/$username/g;
+     s/<CLIENT_KEY>/$username.pem/g;
+     s/<ORGANIZATION_NAME>/$short_org_name/g"
+}
+configure_chef_server
 
 # 2) Set information about ip and domain name of the Ambari Server:
 
