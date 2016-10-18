@@ -35,10 +35,11 @@ describe_chef_server_fqdn
 
 while [ -z $chef_server_fqdn ]; do
   sleep 30
+  echo Waiting chef_server_fqdn
   describe_chef_server_fqdn
 done
 
-sed ./.chef/knife.rb --in-place=.old --expression="s/<CHEF_SERVER_URL>/$chef_server_fqdn/g"
+sed ./.chef/knife.rb -i.old -e "s/<CHEF_SERVER_URL>/$chef_server_fqdn/g"
 
 # 2) Set information about ip and domain name of the Ambari Server:
 
@@ -61,15 +62,16 @@ describe_ambari_server_fqdn
 
 while [ -z $ambari_server_ip ]; do
   sleep 30
+  echo Waiting ambari_server_ip and ambari_server_fqdn
   describe_ambari_server_ip
   describe_ambari_server_fqdn
 done
 
-sed ./data_bags/nodes/ambari-server.json -i.old -e "s/<AMBARI_SERVER_IP>/$ambari_server_ip; s/<AMBARI_SERVER_HOSTNAME>/$ambari_server_fqdn"
+sed ./data_bags/nodes/ambari-server.json -i.old -e "s/<AMBARI_SERVER_IP>/$ambari_server_ip/g; s/<AMBARI_SERVER_HOSTNAME>/$ambari_server_fqdn/g"
 
 # 3) Fetch an SSL certificate from the Chef Server:
 
-knife ssl fetch
+echo knife ssl fetch
 
 # 4) Print out private DNS names of all the Ambari Agents:
 #    (use this info while creating a blueprint AND
@@ -83,8 +85,9 @@ function describe_ambari_agents_fqdns {
 }
 describe_ambari_agents_fqdns
 
-while [ -z $ambari_agents_fqdns ]; do
+while [ -z $ambari_agents_fqdns 2> /dev/null ]; do
   sleep 30
+  echo Waiting ambari_agents_fqdns
   describe_ambari_agents_fqdns
 done
 
