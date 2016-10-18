@@ -23,30 +23,49 @@ aws cloudformation create-stack \
     ParameterKey=SubnetID,ParameterValue=$subnet_id \
     ParameterKey=SubnetCidr,ParameterValue=$subnet_cidr
 
-# Here wait until all the instances are ready.
-
 # 1) Set domain name of the Chef Server:
 
-chef_server_domain_name=$(aws ec2 describe-instances --filters \
-  Name=tag:Name,Values=ChefServer \
-  Name=instance-state-name,Values=running \
-  --query 'Reservations[*].Instances[*].{IP:PublicDnsName}')
+function describe_chef_server_fqdn {
+  chef_server_fqdn=$(aws ec2 describe-instances --filters \
+    Name=tag:Name,Values=ChefServer \
+    Name=instance-state-name,Values=running \
+    --query 'Reservations[*].Instances[*].{IP:PublicDnsName}')
+}
+describe_chef_server_fqdn
 
-sed ./.chef/knife.rb --in-place=.old --expression="s/<CHEF_SERVER_URL>/$chef_server_domain_name/g"
+while [ -z $chef_server_fqdn ]; do
+  sleep 30
+  describe_chef_server_fqdn
+done
+
+sed ./.chef/knife.rb --in-place=.old --expression="s/<CHEF_SERVER_URL>/$chef_server_fqdn/g"
 
 # 2) Set information about ip and domain name of the Ambari Server:
 
-ambari_server_ip=$(aws ec2 describe-instances --filters \
-  Name=tag:Name,Values=AmbariServer \
-  Name=instance-state-name,Values=running \
-  --query 'Reservations[*].Instances[*].{IP:PublicIpAddress}')
+function describe_ambari_server_ip {
+  ambari_server_ip=$(aws ec2 describe-instances --filters \
+    Name=tag:Name,Values=AmbariServer \
+    Name=instance-state-name,Values=running \
+    --query 'Reservations[*].Instances[*].{IP:PublicIpAddress}')
+}
 
-ambari_server_hostname=$(aws ec2 describe-instances --filters \
-  Name=tag:Name,Values=AmbariServer \
-  Name=instance-state-name,Values=running \
-  --query 'Reservations[*].Instances[*].{IP:PublicDnsName}')
+function describe_ambari_server_fqdn {
+  ambari_server_fqdn=$(aws ec2 describe-instances --filters \
+    Name=tag:Name,Values=AmbariServer \
+    Name=instance-state-name,Values=running \
+    --query 'Reservations[*].Instances[*].{IP:PublicDnsName}')
+}
 
-sed ./data_bags/nodes/ambari-server.json -i.old -e "s/<AMBARI_SERVER_IP>/$ambari_server_ip; s/<AMBARI_SERVER_HOSTNAME>/$ambari_server_hostname"
+describe_ambari_server_ip
+describe_ambari_server_fqdn
+
+while [ -z $ambari_server_ip ]; do
+  sleep 30
+  describe_ambari_server_ip
+  describe_ambari_server_fqdn
+done
+
+sed ./data_bags/nodes/ambari-server.json -i.old -e "s/<AMBARI_SERVER_IP>/$ambari_server_ip; s/<AMBARI_SERVER_HOSTNAME>/$ambari_server_fqdn"
 
 # 3) Fetch an SSL certificate from the Chef Server:
 
@@ -56,12 +75,20 @@ knife ssl fetch
 #    (use this info while creating a blueprint AND
 #    to substitute hostnames in cluster_creation_template):
 
-ambari_agents_hostnames=$(aws ec2 describe-instances --filters \
-  Name=tag:Name,Values=AmbariAgent* \
-  Name=instance-state-name,Values=running \
-  --query 'Reservations[*].Instances[*].{IP:PublicIpAddress}')
+function describe_ambari_agents_fqdns {
+  ambari_agents_fqdns=$(aws ec2 describe-instances --filters \
+    Name=tag:Name,Values=AmbariAgent* \
+    Name=instance-state-name,Values=running \
+    --query 'Reservations[*].Instances[*].{IP:PublicIpAddress}')
+}
+describe_ambari_agents_fqdns
 
-for agent in $ambari_agents_hostnames
+while [ -z $ambari_agents_fqdns ]; do
+  sleep 30
+  describe_ambari_agents_fqdns
+done
+
+for agent in $ambari_agents_fqdns
 do
     echo "$agent"
 done
