@@ -18,10 +18,12 @@ aws cloudformation create-stack \
   --parameters \
     ParameterKey=KeyName,ParameterValue=default \
     ParameterKey=AgentsInstanceTypeParameter,ParameterValue=t2.micro \
+    ParameterKey=ChefServerInstanceTypeParameter,ParameterValue=t2.micro \
     ParameterKey=VpcId,ParameterValue=$vpc_id \
     ParameterKey=SubnetID,ParameterValue=$subnet_id \
     ParameterKey=SubnetCidr,ParameterValue=$subnet_cidr
 
+# Here wait until all the instances are ready.
 
 # 1) Set domain name of the Chef Server:
 

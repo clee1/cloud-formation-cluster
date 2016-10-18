@@ -111,7 +111,9 @@
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "ImageId": "ami-cc5a23db",
-        "InstanceType": "t2.medium",
+        "InstanceType": {
+          "Ref": "ChefServerInstanceTypeParameter"
+        },
         "KeyName": {
           "Ref": "KeyName"
         },
@@ -350,6 +352,15 @@
       "Type": "AWS::EC2::KeyPair::KeyName",
       "ConstraintDescription": "must be the name of an existing EC2 KeyPair."
     },
+    "ChefServerInstanceTypeParameter": {
+      "Type": "String",
+      "Default": "t2.micro",
+      "AllowedValues": [
+        "t2.micro",
+        "t2.medium"
+      ],
+      "Description": "Enter t2.micro or t2.medium. Default is t2.micro."
+    },
     "AgentsInstanceTypeParameter": {
       "Type": "String",
       "Default": "t2.micro",
@@ -357,7 +368,7 @@
         "t2.micro",
         "t2.medium"
       ],
-      "Description": "Enter t2.micro, t2.medium. Default is t2.micro."
+      "Description": "Enter t2.micro or t2.medium. Default is t2.micro."
     },
     "VpcId": {
       "Type": "AWS::EC2::VPC::Id"
