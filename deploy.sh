@@ -47,16 +47,23 @@ function configure_chef_server {
   }
   describe_chef_server_fqdn
 
+  echo Configuring the Chef Server:
+
   while [ -z $chef_server_fqdn ]; do
     sleep 30
-    echo Waiting chef_server_fqdn
+    echo Waiting for chef_server_fqdn
     describe_chef_server_fqdn
   done
 
-  ssh -i $aws_key "ec2-user@$chef_server_fqdn chef-server-ctl user-create $username $first_name $last_name $email '$password' --filename /home/ec2-user/$user.pem"
-  ssh -i $aws_key "ec2-user@$chef_server_fqdn chef-server-ctl org-create $short_org_name '$full_org_name' --association_user $username --filename /home/ec2-user/$short_org_name-validator.pem"
-  scp -i $aws_key "ec2-user@$chef_server_fqdn:$user.pem ./.chef/"
-  scp -i $aws_key "ec2-user@$chef_server_fqdn:$short_org_name-validator.pem ./.chef/"
+  echo Creating an administrator:
+  ssh -t -i $aws_key ec2-user@$chef_server_fqdn "sudo chef-server-ctl user-create $username $first_name $last_name $email '$password' --filename /home/ec2-user/$username.pem"
+
+  echo Configuring an organization:
+  ssh -t -i $aws_key ec2-user@$chef_server_fqdn "sudo chef-server-ctl org-create $short_org_name '$full_org_name' --association_user $username --filename /home/ec2-user/$short_org_name-validator.pem"
+
+  echo Getting private keys:
+  scp -i $aws_key ec2-user@$chef_server_fqdn:~/$username.pem ./.chef/
+  scp -i $aws_key ec2-user@$chef_server_fqdn:~/$short_org_name-validator.pem ./.chef/
 
   sed ./.chef/knife.rb -i.old -e \
     "s/<CHEF_SERVER_URL>/$chef_server_fqdn/g;
@@ -87,7 +94,7 @@ describe_ambari_server_fqdn
 
 while [ -z $ambari_server_ip ]; do
   sleep 30
-  echo Waiting ambari_server_ip and ambari_server_fqdn
+  echo Waiting for ambari_server_ip and ambari_server_fqdn
   describe_ambari_server_ip
   describe_ambari_server_fqdn
 done
@@ -112,7 +119,7 @@ describe_ambari_agents_fqdns
 
 while [ -z $ambari_agents_fqdns 2> /dev/null ]; do
   sleep 30
-  echo Waiting ambari_agents_fqdns
+  echo Waiting for ambari_agents_fqdns
   describe_ambari_agents_fqdns
 done
 
