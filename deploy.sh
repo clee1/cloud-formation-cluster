@@ -55,6 +55,12 @@ function configure_chef_server {
     describe_chef_server_fqdn
   done
 
+  while ! ssh -t -i $aws_key ec2-user@$chef_server_fqdn "sudo chef-server-ctl reconfigure"
+  do
+    echo Waiting until all services on the server have started...
+    sleep 60
+  end
+
   echo Creating an administrator:
   ssh -t -i $aws_key ec2-user@$chef_server_fqdn "sudo chef-server-ctl user-create $username $first_name $last_name $email '$password' --filename /home/ec2-user/$username.pem"
 
@@ -103,7 +109,7 @@ sed ./data_bags/nodes/ambari-server.json -i.old -e "s/<AMBARI_SERVER_IP>/$ambari
 
 # 3) Fetch an SSL certificate from the Chef Server:
 
-echo knife ssl fetch
+knife ssl fetch
 
 # 4) Print out private DNS names of all the Ambari Agents:
 #    (use this info while creating a blueprint AND
