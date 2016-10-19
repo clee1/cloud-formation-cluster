@@ -1,4 +1,4 @@
-name "ambari-server"
+name "ambari-agent"
 description "A role for the ambari server."
 run_list "recipe[selinux::disabled]",
          "recipe[common::default]",
