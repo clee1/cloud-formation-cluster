@@ -4,8 +4,8 @@
 #
 # Copyright (c) 2016 Eugen Prokhorenko, All Rights Reserved.
 
-yum_repository 'ambari' do
-  baseurl "http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.1.0/ambari.repo"
+remote_file '/etc/yum.repos.d/ambari.repo' do
+  source "http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.2.2.0/ambari.repo"
 end
 
 service "rpcbind" do
@@ -13,7 +13,7 @@ service "rpcbind" do
 end
 
 package "java-1.7.0-openjdk"
-package "maven"
+package "javapackages-tools"
 package "ambari-agent"
 
 template '/etc/ambari-agent/conf/ambari-agent.ini' do
@@ -21,6 +21,7 @@ template '/etc/ambari-agent/conf/ambari-agent.ini' do
   owner  'root'
   group  'root'
   mode   '0644'
+  variables ({ ambari_server_hostname: data_bag_item("nodes", "ambari-server") })
   action :create
 end
 

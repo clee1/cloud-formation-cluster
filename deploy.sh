@@ -136,3 +136,14 @@ for agent in $ambari_agents_fqdns
 do
     echo "$agent" | tee -a nodes.txt
 done
+
+knife upload .
+
+berks install -b cookbooks/ambari-server/Berksfile
+berks upload -b cookbooks/ambari-server/Berksfile --no-ssl-verify
+
+berks install -b cookbooks/ambari-agent/Berksfile
+berks upload -b cookbooks/ambari-agent/Berksfile --no-ssl-verify
+
+berks install -b cookbooks/common/Berksfile
+berks upload -b cookbooks/common/Berksfile --no-ssl-verify

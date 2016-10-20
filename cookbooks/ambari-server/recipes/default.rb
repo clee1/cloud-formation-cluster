@@ -7,7 +7,6 @@
 package 'gcc'
 package "postgresql-server"
 package "postgresql-jdbc"
-package "postgresql-jdbc-javadoc"
 
 execute "setup postgresql" do
   command "postgresql-setup initdb"
@@ -68,8 +67,8 @@ file '/etc/yum/pluginconf.d/refresh-packagekit.conf' do
   content 'enabled=0'
 end
 
-yum_repository 'ambari' do
-  baseurl "http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.1.0/ambari.repo"
+remote_file '/etc/yum.repos.d/ambari.repo' do
+  source "http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.2.2.0/ambari.repo"
 end
 
 package "ambari-server"

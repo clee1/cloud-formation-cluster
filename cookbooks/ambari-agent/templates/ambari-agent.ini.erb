@@ -13,7 +13,7 @@
 # See the License for the specific
 
 [server]
-hostname=<%= data_bag_item("ambari-server", "hostname") %>
+hostname=<%= @ambari_server_hostname["hostname"] %>
 url_port=8440
 secured_url_port=8441
 
