@@ -47,27 +47,27 @@ function configure_chef_server {
   }
   describe_chef_server_fqdn
 
-  echo Configuring the Chef Server:
+  echo Configuring the Chef Server…
 
   while [ -z $chef_server_fqdn ]; do
     sleep 30
-    echo Waiting for chef_server_fqdn
+    echo Waiting for chef_server_fqdn…
     describe_chef_server_fqdn
   done
 
-  while ! ssh -t -i $aws_key ec2-user@$chef_server_fqdn "sudo chef-server-ctl reconfigure"
+  while ! ssh -t -i $aws_key ec2-user@$chef_server_fqdn "[ -f /etc/opscode/pivotal.pem ]"
   do
-    echo Waiting until all services on the server have started...
+    echo Waiting until all services on the server have started…
     sleep 60
-  end
+  done
 
-  echo Creating an administrator:
+  echo Creating an administrator…
   ssh -t -i $aws_key ec2-user@$chef_server_fqdn "sudo chef-server-ctl user-create $username $first_name $last_name $email '$password' --filename /home/ec2-user/$username.pem"
 
-  echo Configuring an organization:
+  echo Configuring an organization…
   ssh -t -i $aws_key ec2-user@$chef_server_fqdn "sudo chef-server-ctl org-create $short_org_name '$full_org_name' --association_user $username --filename /home/ec2-user/$short_org_name-validator.pem"
 
-  echo Getting private keys:
+  echo Getting private keys…
   scp -i $aws_key ec2-user@$chef_server_fqdn:~/$username.pem ./.chef/
   scp -i $aws_key ec2-user@$chef_server_fqdn:~/$short_org_name-validator.pem ./.chef/
 
@@ -100,10 +100,12 @@ describe_ambari_server_fqdn
 
 while [ -z $ambari_server_ip ]; do
   sleep 30
-  echo Waiting for ambari_server_ip and ambari_server_fqdn
+  echo Waiting for ambari_server_ip and ambari_server_fqdn…
   describe_ambari_server_ip
   describe_ambari_server_fqdn
 done
+
+echo ! Ambari server IP address: $ambari_server_ip
 
 sed ./data_bags/nodes/ambari-server.json -i.old -e "s/<AMBARI_SERVER_IP>/$ambari_server_ip/g; s/<AMBARI_SERVER_HOSTNAME>/$ambari_server_fqdn/g"
 
@@ -125,10 +127,11 @@ describe_ambari_agents_fqdns
 
 while [ -z $ambari_agents_fqdns 2> /dev/null ]; do
   sleep 30
-  echo Waiting for ambari_agents_fqdns
+  echo Waiting for ambari_agents_fqdns…
   describe_ambari_agents_fqdns
 done
 
+echo ! Ambari agents:
 for agent in $ambari_agents_fqdns
 do
     echo "$agent"
