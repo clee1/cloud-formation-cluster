@@ -58,7 +58,7 @@ function configure_chef_server {
   while ! ssh -t -i $aws_key ec2-user@$chef_server_fqdn "[ -f /etc/opscode/pivotal.pem ]"
   do
     echo Waiting until all services on the server have started…
-    sleep 60
+    sleep 600
   done
 
   echo Creating an administrator…
@@ -105,7 +105,7 @@ while [ -z $ambari_server_ip ]; do
   describe_ambari_server_fqdn
 done
 
-echo ! Ambari server IP address: $ambari_server_ip
+echo ! Ambari server IP address: $ambari_server_ip | tee -a nodes.txt
 
 sed ./data_bags/nodes/ambari-server.json -i.old -e "s/<AMBARI_SERVER_IP>/$ambari_server_ip/g; s/<AMBARI_SERVER_HOSTNAME>/$ambari_server_fqdn/g"
 
@@ -131,8 +131,8 @@ while [ -z $ambari_agents_fqdns 2> /dev/null ]; do
   describe_ambari_agents_fqdns
 done
 
-echo ! Ambari agents:
+echo ! Ambari agents: | tee -a nodes.txt
 for agent in $ambari_agents_fqdns
 do
-    echo "$agent"
+    echo "$agent" | tee -a nodes.txt
 done
