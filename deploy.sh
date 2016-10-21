@@ -20,7 +20,7 @@ aws cloudformation create-stack \
   --template-body file://_cloud_formation_template/HadoopCluster.template \
   --parameters \
     ParameterKey=KeyName,ParameterValue=default \
-    ParameterKey=AgentsInstanceTypeParameter,ParameterValue=t2.micro \
+    ParameterKey=AgentsInstanceTypeParameter,ParameterValue=t2.medium \
     ParameterKey=ChefServerInstanceTypeParameter,ParameterValue=t2.medium \
     ParameterKey=VpcId,ParameterValue=$vpc_id \
     ParameterKey=SubnetID,ParameterValue=$subnet_id \
@@ -154,10 +154,15 @@ query_ambari_agents "IP:PublicIpAddress"
 echo Bootstrapping the Ambari Server…
 knife bootstrap $ambari_server_ip -N AmbariServer -r 'role[ambari-server]' --ssh-user ec2-user --identity-file $aws_key --sudo &
 
+function bootstrap_agent {
+  identifier=$(echo $1 | sed 's/\./_/g')
+  knife bootstrap $1 -N AmbariAgent_$identifier -r 'role[ambari-agent]' --ssh-user ec2-user --identity-file $aws_key --sudo
+}
+
 echo Bootstrapping the agents…
-for i in "${!ambari_agents[@]}"
+for agent in $ambari_agents
 do
-  knife bootstrap ${ambari_agents[$i]} -N AmbariAgent$i -r 'role[ambari-agent]' --ssh-user ec2-user --identity-file $aws_key --sudo &
+  bootstrap_agent $agent &
 done
 
 jobs
