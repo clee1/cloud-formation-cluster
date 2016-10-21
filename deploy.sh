@@ -117,22 +117,23 @@ knife ssl fetch
 #    (use this info while creating a blueprint AND
 #    to substitute hostnames in cluster_creation_template):
 
-function describe_ambari_agents_fqdns {
-  ambari_agents_fqdns=$(aws ec2 describe-instances --filters \
+function query_ambari_agents {
+  ambari_agents=$(aws ec2 describe-instances --filters \
     Name=tag:Name,Values=AmbariAgent* \
     Name=instance-state-name,Values=running \
-    --query 'Reservations[*].Instances[*].{IP:PublicIpAddress}')
+    --query "Reservations[*].Instances[*].{$1}")
 }
-describe_ambari_agents_fqdns
 
-while [ -z $ambari_agents_fqdns 2> /dev/null ]; do
+query_ambari_agents "IP:PublicIpAddress,PDN:PrivateDnsName"
+
+while [ -z $ambari_agents 2> /dev/null ]; do
   sleep 30
   echo Waiting for ambari_agents_fqdns…
-  describe_ambari_agents_fqdns
+  query_ambari_agents
 done
 
 echo ! Ambari agents: | tee -a nodes.txt
-for agent in $ambari_agents_fqdns
+for agent in $ambari_agents
 do
     echo "$agent" | tee -a nodes.txt
 done
@@ -147,3 +148,16 @@ berks upload -b cookbooks/ambari-agent/Berksfile --no-ssl-verify
 
 berks install -b cookbooks/common/Berksfile
 berks upload -b cookbooks/common/Berksfile --no-ssl-verify
+
+query_ambari_agents "IP:PublicIpAddress"
+
+echo Bootstrapping the Ambari Server…
+knife bootstrap $ambari_server_ip -N AmbariServer -r 'role[ambari-server]' --ssh-user ec2-user --identity-file $aws_key --sudo &
+
+echo Bootstrapping the agents…
+for i in "${!ambari_agents[@]}"
+do
+  knife bootstrap ${ambari_agents[$i]} -N AmbariAgent$i -r 'role[ambari-agent]' --ssh-user ec2-user --identity-file $aws_key --sudo &
+done
+
+jobs
