@@ -152,11 +152,11 @@ berks upload -b cookbooks/common/Berksfile --no-ssl-verify
 query_ambari_agents "IP:PublicIpAddress"
 
 echo Bootstrapping the Ambari Server…
-knife bootstrap $ambari_server_ip -N AmbariServer -r 'role[ambari-server]' --ssh-user ec2-user --identity-file $aws_key --sudo &
+knife bootstrap $ambari_server_ip -N AmbariServer -r 'role[ambari-server]' --ssh-user centos --identity-file $aws_key --sudo &
 
 function bootstrap_agent {
   identifier=$(echo $1 | sed 's/\./_/g')
-  knife bootstrap $1 -N AmbariAgent_$identifier -r 'role[ambari-agent]' --ssh-user ec2-user --identity-file $aws_key --sudo
+  knife bootstrap $1 -N AmbariAgent_$identifier -r 'role[ambari-agent]' --ssh-user centos --identity-file $aws_key --sudo
 }
 
 echo Bootstrapping the agents…
