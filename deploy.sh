@@ -20,7 +20,7 @@ aws cloudformation create-stack \
   --template-body file://_cloud_formation_template/HadoopCluster.template \
   --parameters \
     ParameterKey=KeyName,ParameterValue=default \
-    ParameterKey=AgentsInstanceTypeParameter,ParameterValue=t2.medium \
+    ParameterKey=AgentsInstanceTypeParameter,ParameterValue=r3.large \
     ParameterKey=ChefServerInstanceTypeParameter,ParameterValue=t2.medium \
     ParameterKey=VpcId,ParameterValue=$vpc_id \
     ParameterKey=SubnetID,ParameterValue=$subnet_id \
