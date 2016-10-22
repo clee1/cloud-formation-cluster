@@ -146,7 +146,7 @@
         }
       },
       "Properties": {
-        "ImageId": "ami-2051294a",
+        "ImageId": "ami-6d1c2007",
         "InstanceType": {
           "Ref": "AgentsInstanceTypeParameter"
         },
@@ -224,7 +224,7 @@
     "AmbariAgent3": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
-        "ImageId": "ami-2051294a",
+        "ImageId": "ami-6d1c2007",
         "InstanceType": {
           "Ref": "AgentsInstanceTypeParameter"
         },
@@ -255,7 +255,7 @@
     "AmbariAgent4": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
-        "ImageId": "ami-2051294a",
+        "ImageId": "ami-6d1c2007",
         "InstanceType": {
           "Ref": "AgentsInstanceTypeParameter"
         },
@@ -286,7 +286,7 @@
     "AmbariAgent1": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
-        "ImageId": "ami-2051294a",
+        "ImageId": "ami-6d1c2007",
         "InstanceType": {
           "Ref": "AgentsInstanceTypeParameter"
         },
@@ -317,7 +317,7 @@
     "AmbariAgent2": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
-        "ImageId": "ami-2051294a",
+        "ImageId": "ami-6d1c2007",
         "InstanceType": {
           "Ref": "AgentsInstanceTypeParameter"
         },
