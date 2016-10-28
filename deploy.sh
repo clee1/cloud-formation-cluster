@@ -58,7 +58,7 @@ function configure_chef_server {
   while ! ssh -t -i $aws_key ec2-user@$chef_server_fqdn "[ -f /etc/opscode/pivotal.pem ]"
   do
     echo [ $(date) ] Waiting until all services on the server have started…
-    sleep 600
+    sleep 300
   done
 
   echo Creating an administrator…
@@ -135,7 +135,15 @@ done
 echo ! Ambari agents: | tee -a nodes.txt
 for agent in $ambari_agents
 do
-    echo "$agent" | tee -a nodes.txt
+  echo "$agent" | tee -a nodes.txt
+done
+
+query_ambari_agents "PDN:PrivateDnsName"
+index=1
+for agent in $ambari_agents
+do
+  sed ./data_bags/nodes/ambari-agents.json -i.old -e "s/<HOST_GROUP_$index>/$agent/g"
+  (( index++ ))
 done
 
 knife upload .

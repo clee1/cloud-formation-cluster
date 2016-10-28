@@ -4,7 +4,8 @@ run_list "recipe[postgresql::client]",
          "recipe[selinux::disabled]",
          "recipe[common::default]",
          "recipe[ambari-server::default]",
-         "recipe[selinux::enforcing]"
+         "recipe[selinux::enforcing]",
+         "recipe[ambari-server::blueprint]"
 override_attributes({
   "starter_name" => "Eugen Prokhorenko",
 })

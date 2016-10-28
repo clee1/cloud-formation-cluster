@@ -1,0 +1,17 @@
+{
+  "blueprint" : "default",
+  "default_password" : "admin",
+  "host_groups" :[
+    <% @agents.each do |host_group_name, fqdn| %>
+      {
+        "name" : "<%= host_group_name %>",
+        "hosts" : [
+          {
+            "fqdn" : "<%= fqdn %>"
+          }
+        ]
+      }
+      <%= @agents.keys.last == host_group_name ? "" : "," %>
+    <% end %>
+  ]
+}
