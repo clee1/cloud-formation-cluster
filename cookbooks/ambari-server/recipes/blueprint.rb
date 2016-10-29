@@ -19,7 +19,7 @@ template cluster_creation_template_location do
 end
 
 execute "check ambari server" do
-  command "curl http://localhost:8080/api/v1/clusters"
+  command "curl http://localhost:8080/api/v1/clusters -u admin:admin"
   retries 5
   retry_delay 300
 
@@ -29,7 +29,7 @@ end
 
 http_request "register blueprint" do
   url "http://localhost:8080/api/v1/blueprints/default"
-  headers({ "X-Requested-By" => "ambari" })
+  headers({ "X-Requested-By" => "ambari", "Authorization" => "Basic YWRtaW46YWRtaW4=" })
   message { ::File.read(blueprint_location) }
 
   action :nothing
@@ -37,7 +37,7 @@ end
 
 http_request "create cluster" do
   url "http://localhost:8080/api/v1/clusters/HadoopCluster"
-  headers({ "X-Requested-By" => "ambari" })
+  headers({ "X-Requested-By" => "ambari", "Authorization" => "Basic YWRtaW46YWRtaW4=" })
   message { ::File.read(cluster_creation_template_location) }
 
   action :nothing

@@ -58,7 +58,7 @@ function configure_chef_server {
   while ! ssh -t -i $aws_key ec2-user@$chef_server_fqdn "[ -f /etc/opscode/pivotal.pem ]"
   do
     echo [ $(date) ] Waiting until all services on the server have started…
-    sleep 300
+    sleep 600
   done
 
   echo Creating an administrator…

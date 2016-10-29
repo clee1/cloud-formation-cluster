@@ -2,7 +2,7 @@
   "blueprint" : "default",
   "default_password" : "admin",
   "host_groups" :[
-    <% @agents.each do |host_group_name, fqdn| %>
+    <% @agents.filter { |hgn, _| hgn.start_with?("host_group") }.each do |host_group_name, fqdn| %>
       {
         "name" : "<%= host_group_name %>",
         "hosts" : [
