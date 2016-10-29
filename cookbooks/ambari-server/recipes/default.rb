@@ -97,43 +97,41 @@ service "ambari" do
   action [:enable, :start]
 end
 
-=begin
-execute "create cluster (post blueprint)" do
-  command <<-SHELL
-    host=localhost
-    port=8080
-    # name_node=zulu-1.cluster
+blueprint_location = "/tmp/blueprint-default"
+cluster_creation_template_location = "/tmp/cluster-creation-template"
 
-    response=000
-    while [ $response -ne 200 ]; do
-      response=$(curl --silent --write-out %{http_code} --silent --output /dev/null $host:$port)
-      sleep 60
-    done
-
-    function get_data {
-      curl --silent -H "X-Requested-By: ambari" -X GET -u admin:admin http://$host:$port/api/v1/$1
-    }
-
-    function post_data {
-      curl --silent -H "X-Requested-By: ambari" -X POST -u admin:admin http://$host:$port/api/v1/$1 -d $2
-    }
-
-    post_data blueprints/default @/vagrant/blueprint/blueprint-default
-    post_data clusters/hadoop @/vagrant/blueprint/cluster-creation-template
-
-    completed=0
-    while [ $completed -ne 1 ]; do
-      echo The blueprint has not been applied yet. Waiting.
-
-      completed=`get_data clusters/hadoop/requests/1 | grep request_status | grep COMPLETED | wc -l`
-      sleep 60
-    done
-
-    # ssh-keyscan $name_node 2>&1 | sort -u - /root/.ssh/known_hosts > /root/.ssh/known_hosts
-    # ssh $name_node yum install -y hadoop-httpfs
-
-    touch /root/cluster_created
-  SHELL
-  not_if do ::File.exists?('/root/cluster_created') end
+cookbook_file blueprint_location do
+  source "blueprint-default"
+  action :create
 end
-=end
+
+template cluster_creation_template_location do
+  source "cluster-creation-template.erb"
+  variables ({ agents: data_bag_item("nodes", "ambari-agents") })
+  action :create
+end
+
+execute "check ambari server" do
+  command "curl http://localhost:8080/api/v1/clusters"
+  retries 5
+  retry_delay 300
+
+  notifies :post, "http_request[register blueprint]", :delayed
+  notifies :post, "http_request[create cluster]", :delayed
+end
+
+http_request "register blueprint" do
+  url "http://localhost:8080/api/v1/blueprints/default"
+  headers({ "X-Requested-By" => "ambari" })
+  message ::File.read(blueprint_location)
+
+  action :nothing
+end
+
+http_request "create cluster" do
+  url "http://localhost:8080/api/v1/clusters/HadoopCluster"
+  headers({ "X-Requested-By" => "ambari" })
+  message ::File.read(cluster_creation_template_location)
+
+  action :nothing
+end
