@@ -107,6 +107,7 @@ done
 
 echo ! Ambari server IP address: $ambari_server_ip | tee -a nodes.txt
 
+sed ./tunnel.sh -i.old -e "s/<AMBARI_SERVER_IP>/$ambari_server_ip/g"
 sed ./data_bags/nodes/ambari-server.json -i.old -e "s/<AMBARI_SERVER_IP>/$ambari_server_ip/g; s/<AMBARI_SERVER_HOSTNAME>/$ambari_server_fqdn/g"
 
 # 3) Fetch an SSL certificate from the Chef Server:
