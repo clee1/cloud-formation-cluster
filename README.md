@@ -1,10 +1,39 @@
 A Hadoop Cluster on AWS with AWS CloudFormation and Chef
 ========================================================
 
-Description
------------
+Summary
+-------
 
-This is a Chef recipe and AWS CloudFormation template to deploy a Hadoop cluster (versions, types...) with Apache Spark and lots of other important stuff on Amazon.
+This is a combination of a Chef recipe and a AWS CloudFormation template that deploys a cluster with Apache Spark, Apache Hadoop, Apache Hive and lots of other important stuff on Amazon EC2 on-demand instances.
+
+Decription of Components
+------------------------
+
+This cluster consists of the following components (listed along with pre-selected values in the CloudFormation template):
+
+- a Chef server (t2.medium: 2 vCPU, 4 GiB RAM, ami-cc5a23db)
+- an Ambari server (r3.large: 2 vCPU, 15.25 GiB RAM, ami-6d1c2007 (CentOS 7))
+- four working nodes, Ambari agents (r3.large: 2 vCPU, 15.25 GiB RAM, ami-6d1c2007 (CentOS 7))
+- all the components share the same VPC and subnet
+- StackSecurityGroup for the Chef server
+- ClientsSecurityGroup for all the Chef clients — Ambari server and Ambari agents
+
+![alt tag](_cloud_formation_template/HadoopCluster-designer.png)
+
+Deployment Flow
+---------------
+
+The main entry point for the process of the deployment of the cluster is `deploy.sh` script. In short, what it does is:
+
+1. Fetches some information about the network setup on your AWS account to know where machines should go (VPC, subnet)
+2. Issues a request to AWS CloudFormation with a template (`_cloud_formation_template/HadoopCluster.template` file) that describes what components we want to have (see the Description of Components paragraph).
+3. Configures the Chef server — creates an administrator, an organization; gets private keys; uploads cookbooks onto it.
+4. Bootstraps nodes — Chef clients. The roles of the nodes are available in the `roles` directory. During the bootsraping process Chef server installs one Ambari server and multiple Ambari agents on the clients.
+5. After Ambari has been installed on all the nodes, Chef issues one new request to the Ambari server with a [blueprint](https://cwiki.apache.org/confluence/display/AMBARI/Blueprints) (cookbooks/ambari-server/files/blueprint-default) describing what software we want to see on the agents in its body — Spark, Hadoop, YARN, Hive etc.
+6. After the installation process of the software described in the blueprint has finished the cluster is ready to computations.
+
+Helper Scripts
+--------------
 
 Prerequisites
 -------------
