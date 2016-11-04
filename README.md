@@ -4,21 +4,21 @@ A Hadoop Cluster on AWS with AWS CloudFormation and Chef
 Summary
 -------
 
-This is a combination of a Chef recipe and a AWS CloudFormation template that deploys a cluster with Apache Spark, Apache Hadoop, Apache Hive and lots of other important stuff on Amazon EC2 on-demand instances.
+This is a combination of a [Chef](https://www.chef.io/chef/) recipe and a [AWS CloudFormation](https://aws.amazon.com/cloudformation/) template that deploys a cluster with [Apache Spark](https://spark.apache.org/), [Apache Hadoop](https://hadoop.apache.org/), [Apache Hive](https://hive.apache.org/), [Apache Kafka](https://kafka.apache.org/) and lots of other important software on Amazon EC2 on-demand instances.
 
 Decription of Components
 ------------------------
 
+![alt tag](_cloud_formation_template/HadoopCluster-designer.png)
+
 This cluster consists of the following components (listed along with pre-selected values in the CloudFormation template):
 
 - a Chef server (t2.medium: 2 vCPU, 4 GiB RAM, ami-cc5a23db)
-- an Ambari server (r3.large: 2 vCPU, 15.25 GiB RAM, ami-6d1c2007 (CentOS 7))
+- an [Ambari](https://ambari.apache.org/) server (r3.large: 2 vCPU, 15.25 GiB RAM, ami-6d1c2007 (CentOS 7))
 - four working nodes, Ambari agents (r3.large: 2 vCPU, 15.25 GiB RAM, ami-6d1c2007 (CentOS 7))
 - all the components share the same VPC and subnet
 - StackSecurityGroup for the Chef server
 - ClientsSecurityGroup for all the Chef clients — Ambari server and Ambari agents
-
-![alt tag](_cloud_formation_template/HadoopCluster-designer.png)
 
 Deployment Flow
 ---------------
@@ -35,13 +35,17 @@ The main entry point for the process of the deployment of the cluster is `deploy
 Helper Scripts
 --------------
 
+- `reset.sh` — script that returns everything in the initial state after the cluster has been destroyed.
+- `tunnel.sh` — creates an ssh tunnel from your port 9999 to port 8080 on the Ambari server which gives you access to the Ambari UI. Note that the correct private key needs to be specified (instead of what there is now) for ssh command to connect.
+- `deploy.sh` - see the previous "Deployment Flow" paragraph.
+
 Prerequisites
 -------------
 
 1. Ensure that a VPC the cluster is to be deployed on resolves private hostnames within a subnetwork. (AWS -> VPC -> Select VPC -> Edit DNS Hostnames -> DNS Hostnames -> Yes)
 2. Ensure that AWS CLI is configured (See: http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html)
-3. Set postgres credentials in the databag: `./data_bags/postgres/config.json`
-4. Set the location of the AWS private key in the `deploy.sh:6` - a script in the root directory of the repository. It's needed to reach ec2 instances via ssh `deploy.sh:56-59`. (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html)
-5. Define variables with which the Chef Server is to be configured in the `deploy.sh:32` (refer to this page for more information (items 5-6): https://docs.chef.io/install_server.html)
+3. [Optional] Set postgres credentials in the databag: `./data_bags/postgres/config.json`
+4. Set the location of the AWS private key in the `deploy.sh:6` - a script in the root directory of the repository. It's needed to reach ec2 instances via ssh `deploy.sh:58,65,68,71,72,164,168,`. (<http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html>)
+5. Define variables with which the Chef Server is to be configured in the `deploy.sh:34-40` (refer to this page for more information (items 5-6): <https://docs.chef.io/install_server.html>)
 
 After you have checked all the requirements you are ready to proceed by running the script that deployes the cluster: `./deploy.sh`
