@@ -40,7 +40,7 @@ The main entry point for the process of the deployment of the cluster is `deploy
 3. Configures the Chef server — creates an administrator, an organization; gets private keys; uploads cookbooks onto it.
 4. Bootstraps nodes — Chef clients. The roles of the nodes are available in the `roles` directory. During the bootsraping process Chef server installs one Ambari server and multiple Ambari agents on the clients.
 5. After Ambari has been installed on all the nodes, Chef issues one new request to the Ambari server with a [blueprint](https://cwiki.apache.org/confluence/display/AMBARI/Blueprints) (cookbooks/ambari-server/files/blueprint-default) describing what software we want to see on the agents in its body — Spark, Hadoop, YARN, Hive etc.
-6. After the installation process of the software described in the blueprint has finished the cluster is ready to computations.
+6. After the installation process of the software described in the blueprint has finished the cluster is ready to perform computations. Typically, this whole process takes up less then 1 hour.
 
 Helper Scripts
 --------------
