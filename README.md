@@ -1,10 +1,20 @@
-A Hadoop Cluster on AWS with AWS CloudFormation and Chef
-========================================================
+Hadoop Cluster on AWS CloudFormation with Chef
+==============================================
 
 Summary
 -------
 
 This is a combination of a [Chef](https://www.chef.io/chef/) recipe and a [AWS CloudFormation](https://aws.amazon.com/cloudformation/) template that deploys a cluster with [Apache Spark](https://spark.apache.org/), [Apache Hadoop](https://hadoop.apache.org/), [Apache Hive](https://hive.apache.org/), [Apache Kafka](https://kafka.apache.org/) and lots of other important software on Amazon EC2 on-demand instances.
+
+What is so fascinating about this repository?
+---------------------------------------------
+
+If done correctly, i.e. all the steps in the "Prerequisites" paragraph have been completed, it allows one to deploy a cluster by just running a `deploy.sh` script.
+
+Disclaimer
+----------
+
+This is a real-world cluster that uses real-world components that cost real money (approx. $1 per hour). Keep in mind that I am not responsible for a barrel of money you would have to pay after you forgot to shut off the cluster.
 
 Decription of Components
 ------------------------
