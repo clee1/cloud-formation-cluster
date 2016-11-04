@@ -9,7 +9,7 @@ This is a combination of a [Chef](https://www.chef.io/chef/) recipe and a [AWS C
 Decription of Components
 ------------------------
 
-![alt tag](_cloud_formation_template/HadoopCluster-designer.png)
+![Fig. 1 - AWS CF Scheme](_cloud_formation_template/HadoopCluster-designer.png)
 
 This cluster consists of the following components (listed along with pre-selected values in the CloudFormation template):
 
@@ -37,7 +37,7 @@ Helper Scripts
 
 - `reset.sh` — script that returns everything in the initial state after the cluster has been destroyed.
 - `tunnel.sh` — creates an ssh tunnel from your port 9999 to port 8080 on the Ambari server which gives you access to the Ambari UI. Note that the correct private key needs to be specified (instead of what there is now) for ssh command to connect.
-- `deploy.sh` - see the previous "Deployment Flow" paragraph.
+- `deploy.sh` — see the previous "Deployment Flow" paragraph.
 
 Prerequisites
 -------------
