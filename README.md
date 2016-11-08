@@ -46,7 +46,7 @@ Helper Scripts
 --------------
 
 - `reset.sh` — script that returns everything in the initial state after the cluster has been destroyed.
-- `tunnel.sh` — creates an ssh tunnel from your port 9999 to port 8080 on the Ambari server which gives you access to the Ambari UI. Note that the correct private key needs to be specified (instead of what there is now) for ssh command to connect.
+- `tunnel.sh` — creates an ssh tunnel from your port 9999 to port 8080 on the Ambari server which gives you access to the Ambari UI. Note that the correct private key needs to be specified (see next paragraph, item no. 6) for ssh command to connect.
 - `deploy.sh` — see the previous "Deployment Flow" paragraph.
 
 Prerequisites
@@ -55,7 +55,8 @@ Prerequisites
 1. Ensure that a VPC the cluster is to be deployed on resolves private hostnames within a subnetwork. (AWS -> VPC -> Select VPC -> Edit DNS Hostnames -> DNS Hostnames -> Yes)
 2. Ensure that AWS CLI is configured (See: http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html)
 3. [Optional] Set postgres credentials in the databag: `./data_bags/postgres/config.json`
-4. Set the location of the AWS private key in the `deploy.sh:6` - a script in the root directory of the repository. It's needed to reach ec2 instances via ssh `deploy.sh:58,65,68,71,72,164,168,`. (<http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html>)
+4. Set the location of the AWS identity file the `deploy.sh:6` file and - a script in the root directory of the repository. It's needed to reach ec2 instances via ssh `deploy.sh:58,65,68,71,72,164,168`. (<http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html>)
 5. Define variables with which the Chef Server is to be configured in the `deploy.sh:34-40` (refer to this page for more information (items 5-6): <https://docs.chef.io/install_server.html>)
+6. [Optional] Set location of your AWS identity file in this file: `tunnel.sh:2`.
 
 After you have checked all the requirements you are ready to proceed by running the script that deployes the cluster: `./deploy.sh`
