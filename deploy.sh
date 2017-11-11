@@ -127,7 +127,7 @@ function query_ambari_agents {
 
 query_ambari_agents "IP:PublicIpAddress,PDN:PrivateDnsName"
 
-while [[ -z $ambari_agents 2> /dev/null ]]; do
+while [ -z $ambari_agents 2> /dev/null ]; do
   sleep 30
   echo Waiting for ambari_agents_fqdns…
   query_ambari_agents
