@@ -14,7 +14,7 @@ end
 
 template cluster_creation_template_location do
   source "cluster-creation-template.erb"
-  variables ({ agents: data_bag_item("nodes", "ambari-agents") })
+  variables ({ agents: data_bag_item("instances", "ambari-agents") })
   action :create
 end
 

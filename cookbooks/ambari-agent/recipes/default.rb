@@ -21,7 +21,7 @@ template '/etc/ambari-agent/conf/ambari-agent.ini' do
   owner  'root'
   group  'root'
   mode   '0644'
-  variables ({ ambari_server_hostname: data_bag_item("nodes", "ambari-server") })
+  variables ({ ambari_server_hostname: data_bag_item("instances", "ambari-server") })
   action :create
 end
 
