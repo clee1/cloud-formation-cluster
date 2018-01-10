@@ -3,7 +3,7 @@ set -e
 export AWS_DEFAULT_OUTPUT="text"
 
 # Set the location of your AWS EC2 private key here:
-aws_key=~/default.pem
+aws_key=~/default-virginia.pem
 
 vpc_id=$(aws ec2 describe-vpcs --query 'Vpcs[0].{VpcId:VpcId}')
 subnet_id=$(aws ec2 describe-subnets --query 'Subnets[0].{SubnetId:SubnetId}')
@@ -19,8 +19,8 @@ aws cloudformation create-stack \
   --stack-name "HadoopCluster" \
   --template-body file://_cloud_formation_template/HadoopCluster.template \
   --parameters \
-    ParameterKey=KeyName,ParameterValue=default \
-    ParameterKey=AgentsInstanceTypeParameter,ParameterValue=r3.large \
+    ParameterKey=KeyName,ParameterValue=default-virginia \
+    ParameterKey=AgentsInstanceTypeParameter,ParameterValue=m4.large \
     ParameterKey=ChefServerInstanceTypeParameter,ParameterValue=t2.medium \
     ParameterKey=VpcId,ParameterValue=$vpc_id \
     ParameterKey=SubnetID,ParameterValue=$subnet_id \
@@ -58,7 +58,7 @@ function configure_chef_server {
   while ! ssh -o StrictHostKeyChecking=False -t -i $aws_key ec2-user@$chef_server_fqdn "[ -f /etc/opscode/pivotal.pem ]"
   do
     echo [ $(date) ] Waiting until all services on the server have started…
-    sleep 600
+    sleep 300
   done
 
   echo Creating an administrator…
@@ -108,7 +108,7 @@ done
 echo ! Ambari server IP address: $ambari_server_ip | tee -a nodes.txt
 
 sed ./tunnel.sh -i.old -e "s/<AMBARI_SERVER_IP>/$ambari_server_ip/g"
-sed ./data_bags/nodes/ambari-server.json -i.old -e "s/<AMBARI_SERVER_IP>/$ambari_server_ip/g; s/<AMBARI_SERVER_HOSTNAME>/$ambari_server_fqdn/g"
+sed ./data_bags/instances/ambari-server.json -i.old -e "s/<AMBARI_SERVER_IP>/$ambari_server_ip/g; s/<AMBARI_SERVER_HOSTNAME>/$ambari_server_fqdn/g"
 
 # 3) Fetch an SSL certificate from the Chef Server:
 
@@ -143,7 +143,7 @@ query_ambari_agents "PDN:PrivateDnsName"
 index=1
 for agent in $ambari_agents
 do
-  sed ./data_bags/nodes/ambari-agents.json -i.old -e "s/<HOST_GROUP_$index>/$agent/g"
+  sed ./data_bags/instances/ambari-agents.json -i.old -e "s/<HOST_GROUP_$index>/$agent/g"
   (( index++ ))
 done
 

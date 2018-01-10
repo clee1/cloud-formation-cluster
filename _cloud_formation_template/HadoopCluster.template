@@ -414,9 +414,9 @@
       "AllowedValues": [
         "t2.micro",
         "t2.medium",
-        "r3.large"
+        "m4.large"
       ],
-      "Description": "Enter t2.micro, t2.medium or r3.large. Default is t2.micro."
+      "Description": "Enter t2.micro, t2.medium or m4.large. Default is t2.micro."
     },
     "VpcId": {
       "Type": "AWS::EC2::VPC::Id"
